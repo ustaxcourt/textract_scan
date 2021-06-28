@@ -1,0 +1,7 @@
+**/.terraform/*
+
+*.tfstate
+*.tfstate.*
+
+.terraform.lock.hcl
+/lambda/zipfiles/*.zip
