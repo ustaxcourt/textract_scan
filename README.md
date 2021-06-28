@@ -15,6 +15,10 @@ After the process is finished documents are places in the `efcms-textract-result
 ### Installing
 AWS resources are managed by Terraform. From within the `terraform` directory, running the following should work as expected:
 
+`terraform init` initialize  
+
+then  
+
 `terraform plan` see what's going to happen  
 `terraform apply` push changes to AWS
 `terraform destroy` pull it down. 
