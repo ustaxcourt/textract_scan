@@ -51,7 +51,7 @@ resource "aws_sqs_queue" "textract_complete_queue_DQL" {
 
 resource "aws_sqs_queue" "textract_complete_queue" {
   name                       = "textract_complete_queue"
-  visibility_timeout_seconds = 360
+  visibility_timeout_seconds = 900
   message_retention_seconds  = 1209600 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.textract_complete_queue_DQL.arn

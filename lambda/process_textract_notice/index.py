@@ -7,6 +7,8 @@ from botocore.client import Config
 config = Config(retries={"max_attempts": 30})
 client = boto3.client('textract', config=config)
 s3 = boto3.resource('s3')
+dynamodb = boto3.resource('dynamodb')
+ddb_table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 
 
 def get_results(job_id):
@@ -28,7 +30,6 @@ def get_results(job_id):
 
 
 def save_text(text, docket_number, docket_entry_id):
-    # we don't really know where to save this yet
     output_bucket = os.environ['PDF_BUCKET']
     document_contents_id = str(uuid.uuid4())
     s3object = s3.Object(output_bucket, document_contents_id)
@@ -40,6 +41,7 @@ def save_text(text, docket_number, docket_entry_id):
     s3object.put(
         Body=(bytes(json.dumps(content).encode('UTF-8')))
     )
+    return document_contents_id
 
 
 def handler(event, context):
@@ -60,11 +62,19 @@ def handler(event, context):
         job_id = job_return['JobId']
         docket_number = job_return.get('JobTag')
         documentLocation = job_return.get('DocumentLocation')
-        docketEntryId = None
+        docket_entry_id = None
         if documentLocation is not None:
-            docketEntryId = documentLocation.get('S3ObjectName')
+            docket_entry_id = documentLocation.get('S3ObjectName')
+
         text = get_results(job_id)
-        save_text(text, docket_number, docketEntryId)
+        document_contents_id = save_text(text, docket_number, docket_entry_id)
+
+        ddb_table.put_item(Item={
+            "docket_number": docket_number,
+            "docket_entry_id": docket_entry_id,
+            "document_contents_id": document_contents_id
+        })
+
     return {
         'statusCode': 200,
         'body': f'Processed {len(event["Records"])} records'

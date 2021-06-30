@@ -1,6 +1,6 @@
 # S3 Bucket for Textract Results
 resource "aws_s3_bucket" "textract_results" {
-  bucket = "efcms-textract-result-documents"
+  bucket = var.textract_results_bucket
   force_destroy = true
 }
 

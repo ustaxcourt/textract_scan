@@ -104,6 +104,7 @@ resource "aws_lambda_function" "get_text" {
 			SNS_TOPIC_ARN=aws_sns_topic.textract_notification_topic.arn,
             SNS_ROLE_ARN=aws_iam_role.textract_service_role.arn
             PDF_BUCKET=aws_s3_bucket.textract_results.id
+            DYNAMODB_TABLE=aws_dynamodb_table.data-linking-table.name
 		}
 	}
 }
