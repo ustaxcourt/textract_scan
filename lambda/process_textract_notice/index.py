@@ -59,12 +59,21 @@ def handler(event, context):
          'S3Bucket': 'efcms-test-document-bucket'}
         }
         '''
+
         job_id = job_return['JobId']
         docket_number = job_return.get('JobTag')
         documentLocation = job_return.get('DocumentLocation')
+
         docket_entry_id = None
         if documentLocation is not None:
             docket_entry_id = documentLocation.get('S3ObjectName')
+
+        status = job_return['Status']
+        # We have not seen this happen, but a value other than SUCCEEDED indicates
+        # A problem OCRing the document. If this is a one-time error it will retry
+        # otherwise we should find it in the DLQ
+        if status != "SUCCEEDED":
+            raise ValueError(f'{docket_number} | {docket_entry_id} returned status: {status}')
 
         text = get_results(job_id)
         document_contents_id = save_text(text, docket_number, docket_entry_id)
