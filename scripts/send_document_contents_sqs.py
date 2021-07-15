@@ -87,5 +87,6 @@ def scanDDB(source_table_name, sqs_client, dynamodb_client):
                 print(res['failed'])
 
 
-dynamodb_client, queue = get_aws_clients()
-scanDDB(SOURCE_TABLE_NAME, queue, dynamodb_client)
+if __name__ == "__main__":
+    dynamodb_client, queue = get_aws_clients()
+    scanDDB(SOURCE_TABLE_NAME, queue, dynamodb_client)
