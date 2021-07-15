@@ -5,3 +5,4 @@
 
 .terraform.lock.hcl
 /lambda/zipfiles/*.zip
+__pycache__
